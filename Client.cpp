@@ -60,18 +60,6 @@ std::string GetOrderData() {
   return order.dump();
 }
 
-std::string ProcessBuyOrder(tcp::socket& aSocket, const std::string& aId) {
-  std::string order = GetOrderData();
-  SendMessage(aSocket, aId, Requests::BuyOrder, order);
-  return ReadMessage(aSocket);
-}
-
-std::string ProcessSellOrder(tcp::socket& aSocket, const std::string& aId) {
-  std::string order = GetOrderData();
-  SendMessage(aSocket, aId, Requests::SellOrder, order);
-  return ReadMessage(aSocket);
-}
-
 int main()
 {
     try
@@ -98,7 +86,9 @@ int main()
                          "2) Balance\n"
                          "3) Buy\n"
                          "4) Sell\n"
-                         "5) Exit\n"
+                         "5) Market Depth\n"
+                         "6) Trades\n"
+                         "7) Exit\n"
                          << std::endl;
 
             short menu_option_num;
@@ -120,15 +110,31 @@ int main()
                 }
                 case 3:
                 {
-                  std::cout << ProcessBuyOrder(s, my_id);
-                  break;
+                    std::string order = GetOrderData();
+                    SendMessage(s, my_id, Requests::BuyOrder, order);
+                    std::cout << ReadMessage(s);
+                    break;
                 }
                 case 4:
                 {
-                  std::cout << ProcessSellOrder(s, my_id);
-                  break;
+                    std::string order = GetOrderData();
+                    SendMessage(s, my_id, Requests::SellOrder, order);
+                    std::cout << ReadMessage(s);
+                    break;
                 }
                 case 5:
+                {
+                    SendMessage(s, "", Requests::QuotesInfo, "");
+                    std::cout << ReadMessage(s);
+                    break;
+                }
+                case 6:
+                {
+                  SendMessage(s, "", Requests::Trades, "");
+                  std::cout << ReadMessage(s);
+                  break;
+                }
+                case 7:
                 {
                     exit(0);
                 }
