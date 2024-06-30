@@ -82,12 +82,12 @@ int main()
         {
             // Тут реализовано "бесконечное" меню.
             std::cout << "Menu:\n"
-                         "1) Top Up\n"
-                         "2) Balance\n"
-                         "3) Buy\n"
-                         "4) Sell\n"
-                         "5) Market Depth\n"
-                         "6) Trades\n"
+                         "1) Balance\n"
+                         "2) Buy\n"
+                         "3) Sell\n"
+                         "4) Market Depth\n"
+                         "5) Trades\n"
+                         "6) Cancel Quote\n"
                          "7) Exit\n"
                          << std::endl;
 
@@ -97,41 +97,48 @@ int main()
             {
                 case 1:
                 {
-                    double amount; std::cin >> amount;
-                    SendMessage(s, my_id, Requests::TopUpBalance, std::to_string(amount));
-                    std::cout << ReadMessage(s);
-                    break;
-                }
-                case 2:
-                {
                     SendMessage(s, my_id, Requests::Balance, "");
                     std::cout << ReadMessage(s);
                     break;
                 }
-                case 3:
+                case 2:
                 {
                     std::string order = GetOrderData();
                     SendMessage(s, my_id, Requests::BuyOrder, order);
                     std::cout << ReadMessage(s);
                     break;
                 }
-                case 4:
+                case 3:
                 {
                     std::string order = GetOrderData();
                     SendMessage(s, my_id, Requests::SellOrder, order);
                     std::cout << ReadMessage(s);
                     break;
                 }
-                case 5:
+                case 4:
                 {
-                    SendMessage(s, "", Requests::QuotesInfo, "");
+                    SendMessage(s, my_id, Requests::ActiveQuotes, "");
                     std::cout << ReadMessage(s);
                     break;
                 }
+                case 5:
+                {
+                  SendMessage(s, my_id, Requests::Trades, "");
+                  std::cout << ReadMessage(s);
+                  break;
+                }
                 case 6:
                 {
-                  SendMessage(s, "", Requests::Trades, "");
+                  SendMessage(s, my_id, Requests::ActiveQuotes, "");
                   std::cout << ReadMessage(s);
+                  std::cout << "Choose the quote to decline (-1 to cancel) ";
+                  int quote;
+                  std::cin >> quote;
+                  if (quote != -1)
+                  {
+                    SendMessage(s, my_id, Requests::Cancel, std::to_string(quote));
+                    std::cout << ReadMessage(s);
+                  }
                   break;
                 }
                 case 7:
